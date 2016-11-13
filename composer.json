@@ -1,0 +1,21 @@
+{
+    "name": "wok/httpmessage",
+    "description": "WOK HttpMessage component",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sébastien ALEXANDRE",
+            "email": "sebastien@graphidev.fr"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "psr/http-message": "^1.0",
+        "wok/uri": "^1.2",
+        "wok/collection": "^1.0"
+    },
+    "autoload": {
+        "WOK\\HttpMessage\\": "./src/"
+    }
+}
