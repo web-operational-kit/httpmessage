@@ -16,6 +16,8 @@
         "wok/collection": "^1.0"
     },
     "autoload": {
-        "WOK\\HttpMessage\\": "./src/"
+        "psr-4": {
+            "WOK\\HttpMessage\\": "./src/"
+        }
     }
 }
