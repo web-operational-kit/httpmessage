@@ -43,9 +43,9 @@
         public function __construct(
             $method,
             $uri,
-            array $headers = [],
-            $body = null,
-            $protocolVersion = '1.1'
+            $headers            = array(),
+            $body               = null,
+            $protocolVersion    = '1.1'
         ) {
 
             parent::__construct($headers, $body, $protocolVersion);
