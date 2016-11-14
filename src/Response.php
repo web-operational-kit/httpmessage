@@ -126,8 +126,8 @@
         }
 
         /**
-         * Get the protocol version
-         * @return  integer     Returns the protocol version code
+         * Get the Status code
+         * @return  integer     Returns the status code
         **/
         public function getStatus() {
 
