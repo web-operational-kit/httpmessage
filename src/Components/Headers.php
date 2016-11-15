@@ -11,7 +11,7 @@
 
     namespace WOK\HttpMessage\Components;
 
-    use WOk\Collection\Collection;
+    use \WOK\Collection\Collection;
 
     /**
      * The Headers class provide a headers
@@ -146,7 +146,7 @@
         **/
         public function setHeader($name, $values) {
 
-            $name   = $this->_getCaseInsensitive($name);
+            $name   = $this->_getCaseInsensitiveName($name);
 
             if(is_array($values))
                 $values = implode(', ', $values);
@@ -163,7 +163,7 @@
         **/
         public function addHeader($name, $values) {
 
-            $name = $this->_getCaseInsensitive($name);
+            $name = $this->_getCaseInsensitiveName($name);
 
             if(is_array($values))
                 $values = implode(', ', $values);
@@ -198,7 +198,7 @@
         **/
         public function removeHeader($name) {
 
-            $name = $this->_getCaseInsensitive($name);
+            $name = $this->_getCaseInsensitiveName($name);
             $this->remove($name);
 
         }
@@ -212,14 +212,14 @@
         **/
         public function withoutHeader($name, $value) {
 
-            $name = $this->_getCaseInsensitive($name);
+            $name = $this->_getCaseInsensitiveName($name);
 
             $headers = clone $this;
             $headers->remove($name, $value);
 
             return $headers;
 
-        }        
+        }
 
 
         /**
@@ -230,7 +230,7 @@
         **/
         protected function _getCaseInsensitiveName($name) {
 
-            return mb_str_replace('_', '-', mb_strtolower($name));
+            return str_replace('_', '-', mb_strtolower($name));
 
         }
 
