@@ -36,7 +36,7 @@
         public function __construct($resource) {
 
             if(!is_resource($resource))
-                throw new \DomainException(__CLASS__.' interface requiert a stream as parameter');
+                throw new \DomainException(__CLASS__.' interface requires a stream resource as parameter');
 
             $this->stream   = $resource;
             $this->meta     = stream_get_meta_data($this->stream);
@@ -49,27 +49,33 @@
 
         }
 
-        /**
-         * Instanciate a new Stream object from a string
-         * @param   string      $string         Stream initial content
-        **/
-        public static function createFromString($string = '') {
-
-            $stream = fopen('php://temp', 'w+');
-            $stream = new self($stream);
-
-            $stream->write($string);
-
-        }
 
         /**
          * Instanciate a new Stream object from a file path
-         * @param   string      $filename         Stream initial content
+         * @param   string      $filename         File path
         **/
         public static function createFromPath($filename, $mode = 'w+') {
 
+            if(!file_exists($filename)) {
+                throw new \InvalidArgumentException('File not found at '.$filename);
+            }
+
             $stream = fopen($filename, $mode);
             return new self($stream);
+
+        }
+
+
+        /**
+         * Instanciate a new stream object from a value
+         * @param   string      $filename         Stream initial content
+        **/
+        public static function createFromString($string = '', $mode = 'w+') {
+
+            $stream = new self(fopen('php://temp', $mode));
+            $stream->write($string);
+
+            return $stream;
 
         }
 
@@ -121,9 +127,15 @@
 
         /**
          * Get the stream meta data
-         * @return array
+         * @param   string      $key        Meta key
+         * @return  array|string|null       Returns the meta data list, value or null
         **/
-        public function getMetaData() {
+        public function getMetaData($key = null) {
+
+            if(!empty($key)) {
+                return (isset($this->meta[$key]) ?: null);
+            }
+
             return $this->meta;
         }
 
@@ -134,6 +146,8 @@
          * @return  string
         **/
         public function getContents() {
+
+            $this->rewind();
 
             if (!$this->isReadable() || ($contents = stream_get_contents($this->stream)) === false) {
                 throw new \RuntimeException('Could not get contents of not readable stream');
@@ -148,21 +162,10 @@
         }
 
         /**
-         * Get the stream content as a string
-         * @return   string
+         * Move cursor position
+         * @param   int     $offset         Cursor position
+         * @param   int     $whence         Cursor movement mode
         **/
-        public function __toString() {
-
-            try {
-                return $this->getContents();
-            }
-            catch(\Exception $e) {
-                return false;
-            }
-
-        }
-
-
         public function seek($offset, $whence = SEEK_SET) {
 
             if(!$this->isSeekable())
@@ -187,7 +190,7 @@
         **/
         public function eof() {
 
-            return foef($this->stream);
+            return feof($this->stream);
 
         }
 
@@ -233,8 +236,50 @@
         }
 
 
+        /**
+         * Separate the stream resource
+         * @return  resource    Return the current stream resource
+        **/
+        public function detach() {
+
+            $stream = $this->stream;
+
+            $this->stream = null;
+            $this->readable = $this->writable = $this->seekable = false;
+
+            return $stream;
+
+        }
+
+
+        /**
+         * Close the stream
+         * @return bool     Returns wether the stream has been closed or not
+        **/
         public function close() {
-            fclose($this->stream);
+
+            if (is_resource($this->stream)) {
+                fclose($this->stream);
+            }
+
+            return $this->detach();
+
+        }
+
+
+        /**
+         * Get the stream content as a string
+         * @return   string     Returns the stream content
+        **/
+        public function __toString() {
+
+            try {
+                return $this->getContents();
+            }
+            catch(\Exception $e) {
+                return false;
+            }
+
         }
 
 
