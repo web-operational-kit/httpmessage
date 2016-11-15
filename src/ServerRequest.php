@@ -23,7 +23,7 @@
      * The Request class provide an interface
      * to manage an HTTP request
     **/
-    class Request extends Request implements ServerRequestInterface {
+    class ServerRequest extends Request implements ServerRequestInterface {
 
         /**
          * @var Collection      $server     Server collection instance
