@@ -186,11 +186,14 @@
 
         /**
          * Check if the cursor is at the end of the file
-         * @return  bool
+         * @return  bool    Returns wether the cursor is at the end of file or not
+         *
+         * @note    Because PHP internal `feof` functions only returns true when the file have been read,
+         *          a more radical comparison between position and size is made.
         **/
         public function eof() {
 
-            return feof($this->stream);
+            return ($this->tell() == $this->getSize());
 
         }
 
