@@ -13,7 +13,7 @@
 
     use Psr\Http\Message\MessageInterface;
     use Psr\Http\Message\StreamInterface;
-    use Components\Stream;
+    use WOK\Stream\Stream;
     use Components\Headers;
 
 
