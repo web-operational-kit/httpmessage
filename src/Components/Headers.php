@@ -191,6 +191,20 @@
 
         }
 
+        /**
+         * Get a new instance of the collection object with an added header value.
+         * @param   string      $name       Header's name
+         * @return  self
+        **/
+        public function withAddedHeader($name, $value) {
+
+            $headers = clone $this;
+            $headers->addHeader($name, $value);
+
+            return $headers;
+
+        }
+
 
         /**
          * Remove a defined header
