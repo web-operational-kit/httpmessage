@@ -94,9 +94,9 @@
                 (!empty($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : ''),
                 (!empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ''),
                 (!empty($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : ''/*80*/),
-                $path['path'],
-                $path['query'],
-                $path['fragment']
+                (!empty($path['path']) ? $path['path'] : '/'),
+                (!empty($path['query']) ? $path['query'] : ''),
+                (!empty($path['fragment']) ? $path['fragment'] : '')
             );
 
             // Instanciate ServerRequest
