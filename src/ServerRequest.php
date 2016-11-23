@@ -16,6 +16,7 @@
     use \WOK\Uri\Components\Host;
     use \WOK\Uri\Components\Path;
     use \WOK\Uri\Components\Query;
+    use \WOK\Stream\Stream;
     use \WOK\Collection\Collection;
 
     use WOK\HttpMessage\Components\Headers;
@@ -32,11 +33,6 @@
          * @var Collection      $server     Server collection instance
         **/
         protected $server;
-
-        /**
-         * @var Cookies         $cookies     Cookies collection instance
-        **/
-        protected $cookies;
 
         /**
          * @var Files           $files        Files collection instance
@@ -68,14 +64,12 @@
             $body               = null,
             $protocolVersion    = '1.1',
             $files        = array(),
-            $cookies      = array(),
             $server       = array()
         ) {
 
             parent::__construct($method, $uri, $headers, $body, $protocolVersion);
 
             $this->files        = (is_array($files)   ? new FilesCollection($files) : $files);
-            $this->cookies      = (is_array($cookies) ? new Cookies($cookies)       : $cookies);
             $this->server       = (is_array($server)  ? new Collection($server)     : $server);
             $this->attributes   = new Attributes(array());
 
@@ -116,8 +110,7 @@
                 new Headers(getallheaders()),   // Headers
                 new Stream(fopen('php://input', 'w+')),     // Body
                 $protocolVersion,               // Protocol version
-                new FilesCollection($_FILES),             // Files
-                new Cookies($_COOKIES),         // Cookies
+                new FilesCollection($_FILES),   // Files
                 new Collection($_SERVER)        // Server informations
             );
 
