@@ -114,7 +114,7 @@
                 $_SERVER['REQUEST_METHOD'],     // Method
                 $uri,                           // Uri
                 new Headers(getallheaders()),   // Headers
-                fopen('php://input', 'r+'),     // Body
+                new Stream(fopen('php://input', 'w+')),     // Body
                 $protocolVersion,               // Protocol version
                 new FilesCollection($_FILES),             // Files
                 new Cookies($_COOKIES),         // Cookies
