@@ -10,9 +10,10 @@
     class ServerRequestTest extends TestCase {
 
         /**
-         * Instanciate global request
+         * Test global request
+         * ---
         **/
-        public function __construct() {
+        public function testGlobalsInstanciation() {
 
             $GLOBALS['_SERVER'] = array(
                 'SERVER_PROTOCOL'     => 'HTTP/1.1',
@@ -26,7 +27,10 @@
                 'REQUEST_METHOD'      => 'POST'
             );
 
-            $this->request = ServerRequest::createFromGlobals();
+            $request = ServerRequest::createFromGlobals();
+
+            $this->assertInstanceOf(ServerRequest::class, $request);
+
 
         }
 

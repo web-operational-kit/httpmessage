@@ -12,11 +12,15 @@
     namespace WOK\HttpMessage;
 
     use \WOK\Uri\Uri;
+    use \WOK\Uri\Components\User;
+    use \WOK\Uri\Components\Host;
+    use \WOK\Uri\Components\Path;
+    use \WOK\Uri\Components\Query;
     use \WOK\Collection\Collection;
 
-    use Components\Headers;
-    use Components\Attributes;
-    use Components\FilesCollection;
+    use WOK\HttpMessage\Components\Headers;
+    use WOK\HttpMessage\Components\Attributes;
+    use WOK\HttpMessage\Components\FilesCollection;
 
     /**
      * The Request class provide an interface
@@ -87,20 +91,26 @@
             $protocolVersion = mb_substr(mb_strstr($_SERVER['SERVER_PROTOCOL'], '/'), 1);
 
             // Instanciate Uri component
-            $path = parse_url($_SERVER['REQUEST_URI']);
+            $scheme   = (!empty($_SERVER['REQUEST_SCHEME']) ? $_SERVER['REQUEST_SCHEME'] : (strtolower($_SERVER['HTTPS']) == 'on' ? 'https' : 'http'));
+            $username = (!empty($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : '');
+            $password = (!empty($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : '');
+            $host     = (!empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '');
+            $port     = (!empty($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : ''/*80*/);
+
+            $path     = parse_url($_SERVER['REQUEST_URI']);
+
             $uri = new Uri(
-                (!empty($_SERVER['REQUEST_SCHEME']) ? $_SERVER['REQUEST_SCHEME'] : (strtolower($_SERVER['HTTPS']) == 'on' ? 'https' : 'http')),
-                (!empty($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : ''),
-                (!empty($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : ''),
-                (!empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ''),
-                (!empty($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : ''/*80*/),
-                (!empty($path['path']) ? $path['path'] : '/'),
-                (!empty($path['query']) ? $path['query'] : ''),
+                $scheme,
+                new User($username, $password),
+                new Host($host),
+                $port,
+                new Path(!empty($path['path']) ? $path['path'] : '/'),
+                new Query(explode('&', !empty($path['query']) ? $path['query'] : '')),
                 (!empty($path['fragment']) ? $path['fragment'] : '')
             );
 
             // Instanciate ServerRequest
-            return self::__construct(
+            return new self(
                 $_SERVER['REQUEST_METHOD'],     // Method
                 $uri,                           // Uri
                 new Headers(getallheaders()),   // Headers
