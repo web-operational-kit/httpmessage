@@ -1,0 +1,50 @@
+<?php
+
+
+    use PHPUnit\Framework\TestCase;
+
+    use \WOK\HttpMessage\ServerRequest;
+    use \WOK\HttpMessage\Components\Headers;
+    use \WOK\Stream\Stream;
+
+    class ServerRequestTest extends TestCase {
+
+        /**
+         * Instanciate global request
+        **/
+        public function __construct() {
+
+            $GLOBALS['_SERVER'] = array(
+                'SERVER_PROTOCOL'     => 'HTTP/1.1',
+                'HTTP_HOST'           => 'test.dev',
+                'REQUEST_URI'         => '/request/uri/path?param1=val&param2',
+                'REQUEST_SCHEME'      => '',
+                'HTTPS'               => 'on',
+                'PHP_AUTH_USER'       => null,
+                'PHP_AUTH_PW'         => null,
+                'SERVER_PORT'         => 80,
+                'REQUEST_METHOD'      => 'POST'
+            );
+
+            $this->request = ServerRequest::createFromGlobals();
+
+        }
+
+
+    }
+
+    /**
+     * getallheaders() polyfill
+     * ---
+    **/
+    if (!function_exists('getallheaders')) {
+        function getallheaders() {
+            $headers = '';
+            foreach ($_SERVER as $name => $value) {
+                if (substr($name, 0, 5) == 'HTTP_') {
+                    $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+                }
+            }
+           return $headers;
+        }
+    }
