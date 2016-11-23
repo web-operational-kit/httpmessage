@@ -12,14 +12,14 @@
 
         public function __construct() {
 
-            $this->request = new Request;
+            $this->request = new Request('GET');
 
         }
 
 
         public function testMethodIntegration() {
 
-            
+
 
         }
 

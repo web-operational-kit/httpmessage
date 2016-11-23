@@ -13,16 +13,16 @@
 
     use \WOK\Uri\Uri;
     use \WOK\Collection\Collection;
-    use \Psr\Http\Message\ServerRequestInterface;
 
     use Components\Headers;
+    use Components\Attributes;
     use Components\FilesCollection;
 
     /**
      * The Request class provide an interface
      * to manage an HTTP request
     **/
-    class ServerRequest extends Request implements ServerRequestInterface {
+    class ServerRequest extends Request {
 
         /**
          * @var Collection      $server     Server collection instance
@@ -70,9 +70,10 @@
 
             parent::__construct($method, $uri, $headers, $body, $protocolVersion);
 
-            $this->files    = (is_array($files)   ? new FilesCollection($files) : $files);
-            $this->cookies  = (is_array($cookies) ? new Cookies($cookies)       : $cookies);
-            $this->server   = (is_array($server)  ? new Collection($server)     : $server);
+            $this->files        = (is_array($files)   ? new FilesCollection($files) : $files);
+            $this->cookies      = (is_array($cookies) ? new Cookies($cookies)       : $cookies);
+            $this->server       = (is_array($server)  ? new Collection($server)     : $server);
+            $this->attributes   = new Attributes(array());
 
         }
 
@@ -148,22 +149,125 @@
 
         }
 
+        /**
+         * Retrieve attributes collection
+         * @return Attributes     Returns the attribute collection
+        */
+        public function getAttributes() {
+
+            return $this->attributes;
+
+        }
+
+
+        /**
+         * Define attributes collection
+         * @param      array          $attributes         Array of attributes as [$name => $value]
+        */
+        public function setAttributes(array $attributes) {
+
+            $this->attributes = new Attributes($attributes);
+
+        }
+
+
+        /**
+         * Define attributes collection within a ServerRequest instance copy
+         * @param      array          $attributes         Array of attributes as [$name => $value]
+         * @return     ServerRequest                      Returns a ServerRequest copy with the new attributes
+        */
+        public function withAttributes(array $attributes) {
+
+            $request = clone $this;
+            $request->setAttirbutes($attributes);
+
+            return $request;
+
+        }
+
+
+        /**
+         * Check whether an attribute has been defined or not
+         * @param     string     $name         Attribute's name
+         * @return    bool       Returns true if the attribute exists, false otherwise
+        **/
+        public function hasAttribute($name) {
+
+            return $this->attributes->hasAttribute($name);
+
+        }
+
+
+        /**
+         * Get an attribute's value
+         * @param     string     $name         Attribute's name
+         * @param     mixed      $default      Attribute's default value
+         * @return    mixed      Returns the attribute value, or $default
+        **/
+        public function getAttribute($name, $default) {
+
+            return $this->attributes->getAttribute($name, $default);
+
+        }
+
+
+        /**
+         * Define an attribute
+         * @param     string     $name         Attribute's name
+         * @param     mixed      $value        Attribute's value
+        **/
+        public function setAttribute($name, $value) {
+
+            $this->attributes->setAttribute($name, $value);
+
+        }
+
+        /**
+         * Define an attribute within a ServerRequest instance copy
+         * @param     string     $name         Attribute's name
+         * @param     mixed      $value        Attribute's value
+         * @return    ServerRequest            Returns a ServerRequest instance copy
+        **/
+        public function withAttribute($name, $value) {
+
+            $request = clone $this;
+            $request->setAttribute($name, $value);
+
+            return $request;
+
+        }
+
+
+        /**
+         * Remove a defined attribute
+         * @param string     $name         Attribute's name
+        **/
+        public function removeAttribute($name) {
+
+            $this->attributes->removeAttribute($name);
+
+        }
+
+
+        /**
+         * Remove a defined attribute within a ServerRequest instance copy
+         * @param string     $name         Attribute's name
+        **/
+        public function withoutAttribute($name) {
+
+            $request = clone $this;
+            $request->removeAttribute($name, $value);
+
+            return $request;
+
+        }
+
+
+
         /* @todo Implements the following methods
             public function getParsedBody() {}
             public function setParsedBody($data) {}
             public function withParsedBody($data) {}
-
-            public function getAttributes() {}
-            public function setAttributes() {}
-            public function withAttributes() {}
-
-            public function getAttribute() {}
-            public function hasAttribute() {}
-            public function setAttribute() {}
-            public function withAttribute() {}
-
-            public function removeAttribute() {}
-            public function withoutAttribute() {}
         */
 
 
@@ -174,9 +278,10 @@
 
             parent::__clone();
 
-            $this->files    = clone $files;
-            $this->cookies  = clone $cookies;
-            $this->headers  = clone $headers;
+            $this->files        = clone $files;
+            $this->cookies      = clone $cookies;
+            $this->headers      = clone $headers;
+            $this->attributes   = clone $attributes;
 
         }
 
