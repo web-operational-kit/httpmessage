@@ -90,9 +90,9 @@
             $path = parse_url($_SERVER['REQUEST_URI']);
             $uri = new Uri(
                 (!empty($_SERVER['REQUEST_SCHEME']) ? $_SERVER['REQUEST_SCHEME'] : (strtolower($_SERVER['HTTPS']) == 'on' ? 'https' : 'http')),
-                $_SERVER['PHP_AUTH_USER'],
-                $_SERVER['PHP_AUTH_PW'],
-                $_SERVER['HTTP_HOST'],
+                (!empty($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : ''),
+                (!empty($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : ''),
+                (!empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ''),
                 (!empty($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : ''/*80*/),
                 $path['path'],
                 $path['query'],
