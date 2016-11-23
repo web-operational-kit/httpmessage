@@ -12,13 +12,14 @@
     namespace WOK\HttpMessage;
 
     use \WOK\Uri\Uri;
-    use \Psr\Http\Message\RequestInterface;
+    use \WOK\Stream\Stream;
+    use \WOK\HttpMessage\Components\Headers;
 
     /**
      * The Request class provide an interface
      * to manage an HTTP request
     **/
-    class Request extends Message implements RequestInterface {
+    class Request extends Message {
 
         /**
          * @var string      $method     HTTP method name
@@ -41,17 +42,30 @@
          * @param   string              $protocolVersion    Response HTTP protocol version
         **/
         public function __construct(
-            $method,
-            $uri,
+            $method             = 'GET',
+            $uri                = '/',
             $headers            = array(),
             $body               = null,
             $protocolVersion    = '1.1'
         ) {
 
-            parent::__construct($headers, $body, $protocolVersion);
+            if(!($body instanceof Stream)) {
+
+                $stream = (is_resource($body) ? $body: fopen('php://temp', 'w+'));
+
+                $stream = new Stream($stream);
+                $stream->write($body);
+
+                $body = $stream;
+
+            }
+
+            $headers = (is_array($headers) ? new Headers($headers) : $headers);
+
+            parent::__construct($body, $headers, $protocolVersion);
 
             $this->method   = $method;
-            $this->uri      = (is_string($uri) ? Uri::createFromString($uri) ? $uri);
+            $this->uri      = (is_string($uri) ? Uri::createFromString($uri) : $uri);
 
         }
 
@@ -87,7 +101,7 @@
             $request = clone $this;
             $request->setMethod($name);
 
-            return $request
+            return $request;
 
         }
 
@@ -163,6 +177,8 @@
             $request = clone $this;
             $request->setRequestTarget($path);
 
+            return $request;
+
         }
 
 
@@ -170,7 +186,10 @@
          * Request object clone behavior
         **/
         public function __clone() {
-            $this->uri = clone $uri;
+
+            parent::__clone();
+            $this->attributes  = clone $attributes;
+
         }
 
 

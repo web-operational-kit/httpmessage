@@ -15,9 +15,8 @@
     use \WOK\Collection\Collection;
     use \Psr\Http\Message\ServerRequestInterface;
 
-    use Components\Files;
-    use Components\Cookies;
     use Components\Headers;
+    use Components\FilesCollection;
 
     /**
      * The Request class provide an interface
@@ -89,7 +88,7 @@
             // Instanciate Uri component
             $path = parse_url($_SERVER['REQUEST_URI']);
             $uri = new Uri(
-                (!empty($_SERVER['REQUEST_SCHEME']) ? $_SERVER['REQUEST_SCHEME'] : ($_SERVER['HTTPS'] ? 'https' : 'http')),
+                (!empty($_SERVER['REQUEST_SCHEME']) ? $_SERVER['REQUEST_SCHEME'] : (strtolower($_SERVER['HTTPS']) == 'on' ? 'https' : 'http')),
                 $_SERVER['PHP_AUTH_USER'],
                 $_SERVER['PHP_AUTH_PW']
                 $_SERVER['HTTP_HOST'],
