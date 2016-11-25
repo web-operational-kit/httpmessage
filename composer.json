@@ -11,9 +11,9 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "psr/http-message": "^1.0",
         "wok/uri": "^1.2",
-        "wok/collection": "^1.0"
+        "wok/collection": "^1.0",
+        "wok/stream": "^1.0.0"
     },
     "autoload": {
         "psr-4": {

@@ -11,17 +11,16 @@
 
     namespace WOK\HttpMessage;
 
+    use WOK\Stream\Stream;
+    use WOK\HttpMessage\Components\Headers;
     use Psr\Http\Message\MessageInterface;
-    use Psr\Http\Message\StreamInterface;
-    use Components\Stream;
-    use Components\Headers;
 
 
     /**
      * The Message abstracted class provide
      * common methods for both HTTP request and response.
     **/
-    abstract class Message implements MessageInterface {
+    abstract class Message {
 
         /**
          * @var     string     $protocolVersion     HTTP Protocol version
@@ -44,10 +43,12 @@
          * @param Stream     $body       Body stream handler
          * @param Headers    $body       Body stream handler
         **/
-        public function __construct(StreamInterface $body, Headers $headers) {
+        public function __construct(Stream $body, Headers $headers, $protocolVersion) {
 
-            $this->body     = $this->setBody($body);
-            $this->headers  = $this->setHeaders($headers);
+            $this->setBody($body);
+            $this->setHeaders($headers);
+
+            $this->protocolVersion = $protocolVersion;
 
         }
 
@@ -57,7 +58,9 @@
          * @return     string       Returns the protocol version
         **/
         public function getProtocolVersion() {
+
             return $this->protocolVersion;
+
         }
 
 
@@ -67,7 +70,9 @@
          * @return     string       Returns the protocol version
         **/
         public function setProtocolVersion($version) {
+
             $this->protocolVersion = $version;
+
         }
 
 
@@ -90,8 +95,108 @@
          * Retrieve message headers component
          * @return  Headers    Returns headers component
         **/
-        protected function getHeaders() {
+        public function getHeaders() {
+
             return $this->headers;
+
+        }
+
+
+        /**
+         * Check whether a header exists or not
+         * @param     string     $name        Header's name
+         * @return    bool       Returns whether the header exists or not
+        **/
+        public function hasHeader($name) {
+
+            return $this->headers->hasHeader($name);
+
+        }
+
+
+        /**
+         * Retrieve a header value
+         * @param     string     $name        Header's name
+         * @param     mixed      $default     Default header's value
+         * @return    mixed      Returns the header's value or the default one
+        **/
+        public function getHeader($name, $default = null) {
+
+            return $this->headers->getHeader($name, $default);
+
+        }
+
+
+        /**
+         * Retrieve a header value as a string
+         * @param     string     $name        Header's name
+         * @param     mixed      $default     Default header's value
+         * @return    string     Returns the header's value or the default one
+        **/
+        public function getHeaderLine($name, $default = null) {
+
+            return $this->headers->getHeaderLine($name, $default);
+
+        }
+
+
+        /**
+         * Define a header value
+         * @param     string     $name        Header's name
+         * @param     string     $value       Header's value
+        **/
+        public function setHeader($name, $value) {
+
+            $this->headers->setHeader($name, $value);
+
+        }
+
+
+        /**
+         * Add a header's value
+         * @param     string     $name        Header's name
+         * @param     string     $value       Header's value
+        **/
+        public function addHeader($name, $value) {
+
+            $this->headers->addHeader($name, $value);
+
+        }
+
+
+        /**
+         * Define a header within a headers instance copy
+         * @param     string     $name        Header's name
+         * @param     string     $value       Header's value
+         * @return    Headers    Returns a new headers instance
+        **/
+        public function withHeader($name, $value) {
+
+            return $this->headers->withHeader($name, $value);
+
+        }
+
+        /**
+         * Add a header's value within a headers instance copy
+         * @param     string     $name        Header's name
+         * @param     string     $value       Header's value
+         * @return    Headers    Returns a new headers instance
+        **/
+        public function withAddedHeader($name, $value) {
+
+            return $this->headers->withHeader($name, $value);
+
+        }
+
+        /**
+         * Remove a header within a headers instance copy
+         * @param     string     $name        Header's name
+         * @return    Headers    Returns a new headers instance
+        **/
+        public function withoutHeader($name) {
+
+            return $this->headers->without($name);
+
         }
 
 
@@ -99,8 +204,10 @@
          * Override headers list
          * @param array|Headers     $headers        Headers new list
         **/
-        protected function setHeaders($headers) {
-            $this->headers = (is_array($headers) ? new Headers($headers) = $headers);
+        public function setHeaders($headers) {
+
+            $this->headers = (is_array($headers) ? new Headers($headers) : $headers);
+
         }
 
 
@@ -108,7 +215,7 @@
          * Override headers list in a new instance
          * @param array|Headers     $headers        Headers new list
         **/
-        protected function withHeaders($headers) {
+        public function withHeaders($headers) {
 
             $message = clone $this;
             $message->setHeaders($headers);
@@ -122,8 +229,10 @@
          * Retrieve message body
          * @return Body     Return body instance
         **/
-        protected function getBody() {
+        public function getBody() {
+
             return $this->body;
+
         }
 
 
@@ -131,8 +240,10 @@
          * Redefine message body
          * @param   Stream      Message new body
         **/
-        protected function setBody(StreamInterface $body) {
+        public function setBody(Stream $body) {
+
             $this->body = $body;
+
         }
 
 
@@ -141,7 +252,7 @@
          * @param   Stream      Message new body
          * @return  Body        Returns a message instance copy with the new body
         **/
-        protected function withBody(StreamInterface $body) {
+        public function withBody(Stream $body) {
 
             $message = clone $this;
             $message->setBody($body);
