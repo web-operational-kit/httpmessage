@@ -182,15 +182,4 @@
         }
 
 
-        /**
-         * Request object clone behavior
-        **/
-        public function __clone() {
-
-            parent::__clone();
-            $this->attributes  = clone $attributes;
-
-        }
-
-
     }
