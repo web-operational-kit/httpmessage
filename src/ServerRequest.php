@@ -156,6 +156,100 @@
 
         }
 
+
+        /**
+         * Retrieve server meta data
+         * @return  array   Returns the server parameters collections
+        **/
+        public function getServerParams() {
+
+            return $this->server->all();
+
+        }
+
+
+        /**
+         * Define server parameters
+         * @param   array   $parameters     Server parameters collection
+        **/
+        public function setServerParams(array $parameters) {
+
+            $this->server = new Collection($parameters);
+
+        }
+
+
+        /**
+         * Define server parameters within a ServerRequest copy
+         * @param   array               $parameters     Server parameters collection
+         * @return  ServerRequest       Returns a ServerRequest copy
+        **/
+        public function withServerParams(array $parameters) {
+
+            $request = clone $this;
+            $request->setServerParams($parameters);
+
+            return $request;
+
+        }
+
+
+        /**
+         * Retrieve a server meta data
+         * @param   string                      $name        Server parameter key
+         * @throws  InvalidArgumentException    When the parameter doesn't exists
+         * @return  mixed                       Returns the server parameter
+        **/
+        public function getServerParam($name) {
+
+            if(!$this->server->has($name))
+                throw new \InvalidArgumentException('The `'.$name.'` server parameter is not defined');
+
+            return $this->server->get($name);
+
+        }
+
+
+        /**
+         * Check if a server parameter is defined
+         * @param   string                      $name        Server parameter key
+         * @return  boolean                     Returns whether the server parameter exists or not
+        **/
+        public function hasServerParam($name) {
+
+            return $this->server->has($name);
+
+        }
+
+
+        /**
+         * Define a server parameter
+         * @param   string                      $name         Server parameter key
+         * @param   mixed                       $value        Server parameter value
+        **/
+        public function setServerParam($name, $value) {
+
+            $this->server->set($name, $value);
+
+        }
+
+
+        /**
+         * Define a server parameter within a ServerRequest copy
+         * @param   string                      $name         Server parameter key
+         * @param   mixed                       $value        Server parameter key
+         * @return  boolean                     Returns the ServerRequest copy
+        **/
+        public function withServerParam($name, $value) {
+
+            $request = clone $this;
+            $request->setServerParam($name, $value);
+
+            return $request;
+
+        }
+
+
         /**
          * Retrieve attributes collection
          * @return Attributes     Returns the attribute collection
