@@ -112,7 +112,7 @@
         **/
         public function getUri() {
 
-            return $this->Uri;
+            return $this->uri;
 
         }
 
