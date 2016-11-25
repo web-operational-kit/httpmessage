@@ -85,7 +85,11 @@
             $protocolVersion = mb_substr(mb_strstr($_SERVER['SERVER_PROTOCOL'], '/'), 1);
 
             // Instanciate Uri component
-            $scheme   = (!empty($_SERVER['REQUEST_SCHEME']) ? $_SERVER['REQUEST_SCHEME'] : (strtolower($_SERVER['HTTPS']) == 'on' ? 'https' : 'http'));
+            $scheme   = (!empty($_SERVER['REQUEST_SCHEME']) ? $_SERVER['REQUEST_SCHEME'] : null);
+            if(!$scheme) {
+                $scheme = (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on' ? 'https' : 'http');
+            }
+
             $username = (!empty($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : '');
             $password = (!empty($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : '');
             $host     = (!empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '');
