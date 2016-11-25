@@ -186,7 +186,7 @@
         public function withAttributes(array $attributes) {
 
             $request = clone $this;
-            $request->setAttirbutes($attributes);
+            $request->setAttributes($attributes);
 
             return $request;
 
@@ -285,10 +285,9 @@
 
             parent::__clone();
 
-            $this->files        = clone $files;
-            $this->cookies      = clone $cookies;
-            $this->headers      = clone $headers;
-            $this->attributes   = clone $attributes;
+            $this->files        = clone $this->files;
+            $this->headers      = clone $this->headers;
+            $this->attributes   = clone $this->attributes;
 
         }
 

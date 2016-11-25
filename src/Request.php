@@ -151,7 +151,7 @@
         public function getRequestTarget() {
 
             $path = (string) $this->uri->getPath();
-            return (empty($string) ? '/' : $path);
+            return (empty($path) ? '/' : $path);
 
         }
 
