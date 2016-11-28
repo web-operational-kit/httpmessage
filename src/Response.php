@@ -161,11 +161,11 @@
         **/
         public function setStatus($code, $reason = null) {
 
-            if (!is_integer($status) || $status < 100 || $status > 599) {
+            if (!is_integer($code) || $code < 100 || $code > 599) {
                 throw new InvalidArgumentException('Invalid HTTP status code');
             }
 
-            $this->status = $status;
+            $this->status = $code;
             $this->setReasonPhrase($reason);
 
         }
