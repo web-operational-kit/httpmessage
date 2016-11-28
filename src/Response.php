@@ -128,7 +128,10 @@
                 $stream = (is_resource($body) ? $body: fopen('php://temp', 'w+'));
 
                 $stream = new Stream($stream);
-                $stream->write($body);
+
+                if(!is_resource($body)) {
+                    $stream->write($body);
+                }
 
                 $body = $stream;
 

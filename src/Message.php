@@ -282,7 +282,6 @@
         public function __clone() {
 
             $this->headers  = clone $this->headers;
-            $this->body     = clone $this->body;
 
         }
 
