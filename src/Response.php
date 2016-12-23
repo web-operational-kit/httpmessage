@@ -168,7 +168,7 @@
                 throw new InvalidArgumentException('Invalid HTTP status code');
             }
 
-            $this->status = $code;
+            $this->statusCode = $code;
             $this->setReasonPhrase($reason);
 
         }
