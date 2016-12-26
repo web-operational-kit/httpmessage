@@ -305,7 +305,7 @@
          * @param     mixed      $default      Attribute's default value
          * @return    mixed      Returns the attribute value, or $default
         **/
-        public function getAttribute($name, $default) {
+        public function getAttribute($name, $default = false) {
 
             return $this->attributes->getAttribute($name, $default);
 
