@@ -117,8 +117,15 @@
             }
 
             uasort($values, function($a, $b) use($quantified) {
+
+                if($quantified[$a] == $quantified[$b]) {
+                    return 0;
+                }
+
                 return ($quantified[$a] > $quantified[$b] ? -1 : 1);
+
             });
+
 
             // Return reindexed values
             return array_values($values);
