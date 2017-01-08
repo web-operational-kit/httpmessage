@@ -103,7 +103,7 @@
                 new Host($host),
                 $port,
                 new Path(!empty($path['path']) ? $path['path'] : '/'),
-                (!empty($path['query']) ? Query::createFromString($path['query']) : null),
+                (!empty($path['query']) ? Query::createFromString($path['query']) : new Query(array())),
                 (!empty($path['fragment']) ? $path['fragment'] : '')
             );
 
