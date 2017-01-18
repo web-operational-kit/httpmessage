@@ -231,12 +231,12 @@
          * @param   string      $name       Header's name
          * @return  self
         **/
-        public function withoutHeader($name, $value) {
+        public function withoutHeader($name) {
 
             $name = $this->_getCaseInsensitiveName($name);
 
             $headers = clone $this;
-            $headers->remove($name, $value);
+            $headers->remove($name);
 
             return $headers;
 
