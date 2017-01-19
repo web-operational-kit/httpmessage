@@ -156,7 +156,7 @@
         **/
         public function setMaxAge($time) {
 
-            return $this->time;
+            return $this->maxAge = $time;
 
         }
 

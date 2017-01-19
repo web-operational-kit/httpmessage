@@ -42,7 +42,7 @@
         public function getCookie($name) {
 
             if(!$this->has($name)) {
-                throw new \InvalidArgumentException('Undefined cookie with name `'.$name.'`')
+                throw new \InvalidArgumentException('Undefined cookie with name `'.$name.'`');
             }
 
             return $this->get($name);
