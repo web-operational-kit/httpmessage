@@ -1,6 +1,6 @@
 <?php
 
-    namespace WKO\HttpMessage\Components;
+    namespace WOK\HttpMessage\Components;
 
     class Cookie {
 
@@ -299,7 +299,7 @@
         **/
         public function setSameSite($sameSite) {
 
-            $this->sameSite = ($sameSite ? true : false);
+            $this->sameSite = $sameSite;
 
         }
 
