@@ -83,6 +83,40 @@
 
 
         /**
+         * Define cookie name
+         * @param     string     $name     Cookie's name
+        **/
+        public function setName($name) {
+
+            $this->name = $name;
+
+        }
+
+        /**
+         * Define cookie name whithin a cookie object copy
+         * @param     string     $name     Cookie's name
+         * @return    Cookie     Returns the cookie object with the new name
+        **/
+        public function withName($name) {
+
+            $cookie = clone $this;
+            $cookie->setName($name);
+
+            return $cookie;
+
+        }
+
+        /**
+         * Get the cookie name
+        **/
+        public function getName() {
+
+            return $this->name;
+
+        }
+
+
+        /**
          * Define cookie value
          * @param     string     $value     Cookie's value
         **/
