@@ -221,9 +221,6 @@
             $this->assertEquals($string, (string) $cookie, 'Cookie::__toString must return the cookie as HTTP header string (without header name)');
 
         }
-
-        // cookieName=cookieValue; Max-Age=3600; Expires=Thu, 19 Jan 2017 15:23:30 +0000; Domain=domain.tld; Path=/path/limited; Strict; HttpOnly; SameSite=Strict
-        // cookieName=cookieValue; Max-Age=3600; Expires=Thu, 19 Jan 2017 15:23:30 +0000; Domain=domain.tld; Path=/path/limited; Secure; HttpOnly; SameSite=Strict
-
+        
 
     }
