@@ -67,7 +67,7 @@
         public function __construct($name, $value = '', $maxAge = null, $domain = '', $path = '', $secure = null, $httpOnly = null, $sameSite = null) {
 
             if(empty($name)) {
-                throw \InvalidArgumentException('Cookie\'s name must be set and can not be empty');
+                throw new \InvalidArgumentException('Cookie\'s name must be set and can not be empty');
             }
 
             $this->name     = $name;
