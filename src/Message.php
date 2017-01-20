@@ -13,7 +13,7 @@
 
     use WOK\Stream\Stream;
     use WOK\HttpMessage\Components\Headers;
-    use Psr\Http\Message\MessageInterface;
+    use WOK\HttpMessage\Components\CookiesCollection;
 
 
     /**
@@ -33,6 +33,11 @@
         protected $headers;
 
         /**
+         * @var  CookiesCollection     $cookies    Cookies collection
+        **/
+        protected $cookies;
+
+        /**
          * @var     Stream      $body               Body stream handler
         **/
         protected $body;
@@ -47,6 +52,7 @@
 
             $this->setBody($body);
             $this->setHeaders($headers);
+            $this->cookies = new CookiesCollection(array());
 
             $this->protocolVersion = $protocolVersion;
 
@@ -219,6 +225,43 @@
 
             $message = clone $this;
             $message->setHeaders($headers);
+
+            return $message;
+
+        }
+
+
+        /**
+         * Retrieve cookies collection
+         * @return     CookiesCollection     Returns the cookies collection
+        **/
+        public function getCookies() {
+
+            return $this->cookies;
+
+        }
+
+
+        /**
+         * Define cookies collection
+         * @param     CookiesCollection       $cookies           Cookies collection
+        **/
+        public function setCookies(CookiesCollection $cookies) {
+
+            $this->cookies = $cookies;
+
+        }
+
+
+        /**
+         * Define cookies collection within a message instane copy
+         * @param     CookiesCollection       $cookies           Cookies collection
+         * @return    Message                 Returns the message new instance containing cookies collection
+        **/
+        public function withCookies(CookiesCollection $cookies) {
+
+            $message = clone $this;
+            $message->setCookies($cookies);
 
             return $message;
 

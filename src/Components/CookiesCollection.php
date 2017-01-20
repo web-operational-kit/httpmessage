@@ -27,7 +27,14 @@
         public function __construct(array $cookies = array()) {
 
             foreach($cookies as $name => $value) {
-                $this->createCookie($name, $value);
+
+                if($value instanceof Cookie) {
+                    $this->setCookie($value);
+                }
+                else {
+                    $this->createCookie($name, $value);
+                }
+
             }
 
             $this->rewind();
@@ -94,7 +101,7 @@
         public function withCookie(Cookie $cookie) {
 
             $cookies = clone $this;
-            $cookies->setCookie($name, $value);
+            $cookies->setCookie($cookie);
 
             return $cookies;
 
