@@ -165,7 +165,7 @@
         public function setStatus($code, $reason = null) {
 
             if (!is_integer($code) || $code < 100 || $code > 599) {
-                throw new InvalidArgumentException('Invalid HTTP status code');
+                throw new \InvalidArgumentException('Invalid HTTP status code');
             }
 
             $this->statusCode = $code;
