@@ -364,14 +364,6 @@
         }
 
 
-
-        /* @todo Implements the following methods
-            public function getParsedBody() {}
-            public function setParsedBody($data) {}
-            public function withParsedBody($data) {}
-        */
-
-
         /**
          * Request object clone behavior
         **/
