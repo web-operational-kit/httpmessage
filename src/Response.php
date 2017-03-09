@@ -146,6 +146,20 @@
 
         }
 
+
+        /**
+         * Instanciate a new Response object from a Request object
+         * @param     Request     $request         Request object
+        **/
+        static function createFromRequest(Request $request) {
+
+            $response = new self(200, null, array(), null, $request->getProtocolVersion());
+
+            return $response;
+
+        }
+
+
         /**
          * Get the status value (as `$statusCode $reasonPhrase`)
          * @return  integer     Returns the status code
