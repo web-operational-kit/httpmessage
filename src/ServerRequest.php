@@ -474,6 +474,17 @@
 
 
         /**
+         * Retrieve the uploaded files collection
+         * @return  FilesCollection     Return a FilesCollection object
+        **/
+        public function getUploadedFiles() {
+
+            return $this->files;
+
+        }
+
+
+        /**
          * Retrieve the client IP address
          * @return string       Returns the client IP address
         **/
