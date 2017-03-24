@@ -136,17 +136,6 @@
 
 
         /**
-         * Get the uploaded files
-         * @return  Files       Return the Files collection object
-        **/
-        public function getUploadedFiles() {
-
-            return $this->files;
-
-        }
-
-
-        /**
          * Redefine uploaded files
          * @param array|Files      $files       New files collection
         **/
