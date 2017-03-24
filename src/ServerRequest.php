@@ -365,6 +365,45 @@
 
 
         /**
+
+        /**
+         * Retrieve the client IP address
+         * @return string       Returns the client IP address
+        **/
+        public function getClientIp() {
+
+            $server  = $this->server->all();
+            $methods = array(
+                'HTTP_CLIENT_IP',
+                'HTTP_X_FORWARDED_FOR',
+                'HTTP_X_FORWARDED',
+                'HTTP_X_CLUSTER_CLIENT_IP',
+                'HTTP_FORWARDED_FOR',
+                'HTTP_FORWARDED',
+                'REMOTE_ADDR'
+            );
+
+            foreach($methods as $key) {
+
+                if(array_key_exists($key, $server) === true) {
+                    foreach (explode(',', $server[$key]) as $ip) {
+
+                        $ip = trim($ip); // trim for safety measures
+
+                        // Validate IP
+                        if( filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) ) {
+                            return $ip;
+                        }
+
+                    }
+                }
+
+            }
+
+            return isset($server['REMOTE_ADDR']) ? $server['REMOTE_ADDR'] : false;
+
+        }
+
          * Request object clone behavior
         **/
         public function __clone() {
