@@ -108,7 +108,7 @@
             );
 
             // Instanciate ServerRequest
-            return new self(
+            $request = new self(
                 $_SERVER['REQUEST_METHOD'],     // Method
                 $uri,                           // Uri
                 new Headers(getallheaders()),   // Headers
@@ -117,6 +117,20 @@
                 new FilesCollection($_FILES),   // Files
                 new Collection($_SERVER)        // Server informations
             );
+
+            // Fix PHP input body for submited form
+            $postTypes =  ['application/x-www-form-urlencoded', 'multipart/form-data'];
+            if($request->getMethod() == 'POST' && in_array($request->getBodyType(), $postTypes)) {
+
+                $stream = new Stream(fopen('php://temp', 'w+'));
+                $stream->write(json_encode($_POST));
+                $stream->rewind();
+
+                $request->setBody($stream);
+
+            }
+
+            return $request;
 
         }
 
@@ -360,6 +374,151 @@
             $request->removeAttribute($name, $value);
 
             return $request;
+
+        }
+
+
+        /**
+         * Retrieve request media type
+         * @return string   Returns the media type (from MIME Content-Type)
+        **/
+        public function getBodyType() {
+
+           $ctype = $this->getHeader('Content-Type', null);
+           $parts = preg_split('/\s*[;,]\s*/', $ctype);
+           return mb_strtolower($parts[0]);
+
+       }
+
+
+       /**
+         * Get the request body parameters
+         * @return array Returns the request body parameters
+        **/
+        public function getBodyMeta() {
+
+            $ctype = $this->getHeader('Content-Type', null);
+
+            $parts      = preg_split('/\s*[;,]\s*/', $ctype);
+            $length     = count($parts);
+
+            $parameters = array();
+            for ($i = 1; $i < $length; $i++) {
+                list($name, $value) = explode('=', $parts[$i], 2);
+                $parameters[mb_strtolower($name)] = $value;
+            }
+
+            return $parameters;
+
+        }
+
+
+       /**
+         * Get the request body charset
+         * @param   string      $default        Supposed charset value
+         * @return  string
+        **/
+        public function getBodyCharset($default = null) {
+
+            if(empty($default)) {
+                $default = mb_internal_encoding();
+            }
+
+            $parameters = $this->getBodyMeta();
+            return (isset($parameters['charset']) ? $parameters['charset'] : $default);
+
+        }
+
+
+       /**
+         * Get the parsed request body
+         * @return mixed   Return the parsed request body
+        **/
+        public function getParsedBody() {
+
+            $type       = $this->getBodyType();
+            $body       = $this->body->getContent();
+            $charset    = mb_strtoupper($this->getBodyCharset());
+
+            // Get the right body charset
+            if($charset != mb_strtoupper(mb_internal_encoding())) {
+                $body = mb_convert_encoding($body, $charset, mb_internal_encoding());
+            }
+
+            // JSON
+            if($type == 'application/json') {
+                return json_decode($body, true);
+            }
+
+            // XML
+            elseif($type == 'application/xml' || $type == 'text/xml') {
+
+                $backup = libxml_disable_entity_loader(true);
+                $xml = simplexml_load_string($body);
+                libxml_disable_entity_loader($backup);
+                return $xml;
+
+            }
+
+            // POST
+            elseif(in_array($type, ['application/x-www-form-urlencoded', 'multipart/form-data'])) {
+                return json_decode($body, true);
+            }
+
+            // Not parsed body
+            else {
+                return $body;
+            }
+
+        }
+
+
+        /**
+         * Retrieve the uploaded files collection
+         * @return  FilesCollection     Return a FilesCollection object
+        **/
+        public function getUploadedFiles() {
+
+            return $this->files;
+
+        }
+
+
+        /**
+         * Retrieve the client IP address
+         * @return string       Returns the client IP address
+        **/
+        public function getClientIp() {
+
+            $server  = $this->server->all();
+            $methods = array(
+                'HTTP_CLIENT_IP',
+                'HTTP_X_FORWARDED_FOR',
+                'HTTP_X_FORWARDED',
+                'HTTP_X_CLUSTER_CLIENT_IP',
+                'HTTP_FORWARDED_FOR',
+                'HTTP_FORWARDED',
+                'REMOTE_ADDR'
+            );
+
+            foreach($methods as $key) {
+
+                if(array_key_exists($key, $server) === true) {
+                    foreach (explode(',', $server[$key]) as $ip) {
+
+                        $ip = trim($ip); // trim for safety measures
+
+                        // Validate IP
+                        if( filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) ) {
+                            return $ip;
+                        }
+
+                    }
+                }
+
+            }
+
+            return isset($server['REMOTE_ADDR']) ? $server['REMOTE_ADDR'] : false;
 
         }
 
