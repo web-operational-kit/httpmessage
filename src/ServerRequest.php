@@ -108,7 +108,7 @@
             );
 
             // Instanciate ServerRequest
-            return new self(
+            $request = new self(
                 $_SERVER['REQUEST_METHOD'],     // Method
                 $uri,                           // Uri
                 new Headers(getallheaders()),   // Headers
@@ -117,6 +117,20 @@
                 new FilesCollection($_FILES),   // Files
                 new Collection($_SERVER)        // Server informations
             );
+
+            // Fix PHP input body for submited form
+            $postTypes =  ['application/x-www-form-urlencoded', 'multipart/form-data'];
+            if($request->getMethod() == 'POST' && in_array($request->getBodyType(), $postTypes)) {
+
+                $stream = new Stream(fopen('php://temp', 'w+'));
+                $stream->write(json_encode($_POST));
+                $stream->rewind();
+
+                $request->setBody($stream);
+
+            }
+
+            return $request;
 
         }
 
@@ -365,6 +379,99 @@
 
 
         /**
+         * Retrieve request media type
+         * @return string   Returns the media type (from MIME Content-Type)
+        **/
+        public function getBodyType() {
+
+           $ctype = $this->getHeader('Content-Type', null);
+           $parts = preg_split('/\s*[;,]\s*/', $ctype);
+           return mb_strtolower($parts[0]);
+
+       }
+
+
+       /**
+         * Get the request body parameters
+         * @return array Returns the request body parameters
+        **/
+        public function getBodyMeta() {
+
+            $ctype = $this->getHeader('Content-Type', null);
+
+            $parts      = preg_split('/\s*[;,]\s*/', $ctype);
+            $length     = count($parts);
+
+            $parameters = array();
+            for ($i = 1; $i < $length; $i++) {
+                list($name, $value) = explode('=', $parts[$i], 2);
+                $parameters[mb_strtolower($name)] = $value;
+            }
+
+            return $parameters;
+
+        }
+
+
+       /**
+         * Get the request body charset
+         * @param   string      $default        Supposed charset value
+         * @return  string
+        **/
+        public function getBodyCharset($default = null) {
+
+            if(empty($default)) {
+                $default = mb_internal_encoding();
+            }
+
+            $parameters = $this->getBodyMeta();
+            return (isset($parameters['charset']) ? $parameters['charset'] : $default);
+
+        }
+
+
+       /**
+         * Get the parsed request body
+         * @return mixed   Return the parsed request body
+        **/
+        public function getParsedBody() {
+
+            $type       = $this->getBodyType();
+            $body       = $this->body->getContent();
+            $charset    = mb_strtoupper($this->getBodyCharset());
+
+            // Get the right body charset
+            if($charset != mb_strtoupper(mb_internal_encoding())) {
+                $body = mb_convert_encoding($body, $charset, mb_internal_encoding());
+            }
+
+            // JSON
+            if($type == 'application/json') {
+                return json_decode($body, true);
+            }
+
+            // XML
+            elseif($type == 'application/xml' || $type == 'text/xml') {
+
+                $backup = libxml_disable_entity_loader(true);
+                $xml = simplexml_load_string($body);
+                libxml_disable_entity_loader($backup);
+                return $xml;
+
+            }
+
+            // POST
+            elseif(in_array($type, ['application/x-www-form-urlencoded', 'multipart/form-data'])) {
+                return json_decode($body, true);
+            }
+
+            // Not parsed body
+            else {
+                return $body;
+            }
+
+        }
+
 
         /**
          * Retrieve the client IP address
@@ -404,6 +511,8 @@
 
         }
 
+
+        /**
          * Request object clone behavior
         **/
         public function __clone() {
